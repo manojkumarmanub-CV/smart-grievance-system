@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Complaint Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-1: #eef4ff;
+            --bg-2: #f8fbff;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --danger: #dc2626;
+            --warning: #f59e0b;
+            --success: #16a34a;
+            --border-soft: rgba(148, 163, 184, 0.18);
+            --shadow-soft: 0 20px 50px rgba(15, 23, 42, 0.08);
+            --shadow-card: 0 12px 28px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text-dark);
+            background:
+                radial-gradient(circle at top left, #dbeafe 0%, transparent 28%),
+                radial-gradient(circle at bottom right, #e0e7ff 0%, transparent 24%),
+                linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            font-family: Arial, sans-serif;
+        }
+
+        .page-wrap {
+            padding: 28px 0 50px;
+        }
+
+        .topbar {
+            background: rgba(255, 255, 255, 0.84);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            border-radius: 24px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .brand-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .brand-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 0;
+            line-height: 1.6;
+            max-width: 700px;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-btn {
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-soft);
+            background: rgba(255,255,255,0.85);
+            color: #1e293b;
+            transition: 0.22s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+            color: #0f172a;
+        }
+
+        .main-shell {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            border-radius: 28px;
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .hero-strip {
+            padding: 34px 34px 20px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 0.92rem;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 8px 14px;
+            margin-bottom: 14px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+            max-width: 820px;
+        }
+
+        .hero-desc {
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 760px;
+            margin-bottom: 0;
+        }
+
+        .content-area {
+            padding: 30px 34px 34px;
+        }
+
+        .form-card {
+            background: rgba(255,255,255,0.96);
+            border: 1px solid var(--border-soft);
+            border-radius: 24px;
+            box-shadow: var(--shadow-card);
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 22px;
+        }
+
+        .field-label {
+            font-weight: 700;
+            margin-bottom: 9px;
+            color: #1e293b;
+        }
+
+        .field-note {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 7px;
+        }
+
+        .form-control {
+            border-radius: 16px;
+            padding: 15px 16px;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            font-size: 1rem;
+            box-shadow: none;
+        }
+
+        .form-control:focus {
+            border-color: rgba(37, 99, 235, 0.4);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .upload-wrap {
+            border: 1px dashed rgba(148, 163, 184, 0.35);
+            border-radius: 18px;
+            padding: 18px;
+            background: #f8fbff;
+        }
+
+        .submit-btn,
+        .duplicate-btn,
+        .track-btn {
+            border: none;
+            border-radius: 16px;
+            padding: 14px 18px;
+            font-weight: 800;
+            width: 100%;
+            transition: 0.22s ease;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .duplicate-btn {
+            background: linear-gradient(135deg, #ef4444, var(--danger));
+            color: white;
+        }
+
+        .track-btn {
+            background: linear-gradient(135deg, #fbbf24, var(--warning));
+            color: #111827;
+            text-decoration: none;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .submit-btn:hover,
+        .duplicate-btn:hover,
+        .track-btn:hover {
+            opacity: 0.97;
+            transform: translateY(-1px);
+        }
+
+        .mini-info-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 26px;
+        }
+
+        .mini-info-box {
+            background: #f8fbff;
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            padding: 16px;
+        }
+
+        .mini-info-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .mini-info-text {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        .alert-box {
+            border-radius: 18px;
+            border: 1px solid transparent;
+            padding: 16px 18px;
+            margin-top: 20px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        .alert-danger-soft {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #9f1239;
+        }
+
+        .alert-success-soft {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .alert-warning-soft {
+            background: #fffbeb;
+            border-color: #fde68a;
+            color: #92400e;
+        }
+
+        .analysis-card {
+            margin-top: 24px;
+            background: rgba(255,255,255,0.96);
+            border: 1px solid var(--border-soft);
+            border-radius: 24px;
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+
+        .analysis-header {
+            padding: 20px 24px 10px;
+        }
+
+        .analysis-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 0;
+        }
+
+        .analysis-body {
+            padding: 18px 24px 24px;
+        }
+
+        .info-tile {
+            background: #f8fbff;
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            padding: 18px;
+            height: 100%;
+        }
+
+        .tile-label {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .badge-box {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 9px 14px;
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .badge-dark-soft { background: #e2e8f0; color: #0f172a; }
+        .badge-blue-soft { background: #dbeafe; color: #1d4ed8; }
+        .badge-green-soft { background: #dcfce7; color: #166534; }
+        .badge-yellow-soft { background: #fef3c7; color: #92400e; }
+        .badge-red-soft { background: #fee2e2; color: #b91c1c; }
+        .badge-gray-soft { background: #f1f5f9; color: #334155; }
+
+        .footer-note {
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 22px;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 992px) {
+            .mini-info-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .topbar {
+                padding: 18px;
+            }
+
+            .nav-actions {
+                justify-content: flex-start;
+                margin-top: 12px;
+            }
+
+            .hero-strip {
+                padding: 26px 20px 18px;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .form-card {
+                padding: 22px;
+            }
+
+            .hero-title {
+                font-size: 1.65rem;
+            }
+
+            .brand-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrap">
+    <div class="container">
+
+        <div class="topbar">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-7">
+                    <div class="brand-title">📝 Citizen Complaint Submission Portal</div>
+                    <p class="brand-subtitle">
+                        Submit your grievance clearly and the system will route it to the right department.
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="nav-actions">
+                        <a href="{{ url_for('entry_portal') }}" class="nav-btn">🏠 Home</a>
+                        <a href="{{ url_for('track_complaint') }}" class="nav-btn">🔎 Track Complaint</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-shell">
+            <div class="hero-strip">
+                <div class="hero-badge">⚡ Smart Submission Flow</div>
+                <h1 class="hero-title">Register your grievance in a clean and simple way</h1>
+                <p class="hero-desc">
+                    Fill in your details, describe the issue, and optionally attach proof. A tracking ID will be generated after submission.
+                </p>
+            </div>
+
+            <div class="content-area">
+                <div class="form-card">
+
+                    <div class="mini-info-row">
+                        <div class="mini-info-box">
+                            <div class="mini-info-title">Clear complaint</div>
+                            <p class="mini-info-text">Mention issue, area, and how long it has existed.</p>
+                        </div>
+                        <div class="mini-info-box">
+                            <div class="mini-info-title">Optional evidence</div>
+                            <p class="mini-info-text">You can attach image or PDF proof if available.</p>
+                        </div>
+                        <div class="mini-info-box">
+                            <div class="mini-info-title">Easy tracking</div>
+                            <p class="mini-info-text">Use your tracking ID or phone number later to check status.</p>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Complaint Form</div>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="field-label">Full Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="Enter your full name" value="{{ name if name else '' }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="field-label">Phone Number</label>
+                                <input type="text" name="phone" class="form-control" placeholder="Enter phone number" value="{{ phone if phone else '' }}" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="field-label">Email Address</label>
+                                <input type="email" name="email" class="form-control" placeholder="Enter your email address" value="{{ email if email else '' }}" required>
+                                <div class="field-note">Used for complaint registration and updates.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="field-label">Complaint Description</label>
+                                <textarea class="form-control" name="complaint" rows="6" placeholder="Describe the issue clearly..." required>{{ complaint_text if complaint_text else '' }}</textarea>
+                                <div class="field-note">Include location, issue type, and duration for better processing.</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="field-label">Upload Evidence</label>
+                                <div class="upload-wrap">
+                                    <input type="file" name="evidence" class="form-control">
+                                    <div class="field-note">Supported formats: PNG, JPG, JPEG, PDF</div>
+                                </div>
+                            </div>
+
+                            {% if not show_duplicate_options %}
+                            <div class="col-12">
+                                <button type="submit" class="submit-btn">Submit Complaint</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </form>
+
+                    {% if show_duplicate_options %}
+                    <div class="alert-box alert-warning-soft">
+                        <strong>Duplicate Warning:</strong> {{ duplicate_warning }}
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <form method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="name" value="{{ name }}">
+                                <input type="hidden" name="phone" value="{{ phone }}">
+                                <input type="hidden" name="email" value="{{ email }}">
+                                <input type="hidden" name="complaint" value="{{ complaint_text }}">
+                                <input type="hidden" name="force_submit" value="yes">
+                                <button type="submit" class="duplicate-btn">Submit Anyway</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('track_complaint', ticket_id=duplicate_ticket) }}" class="track-btn w-100 h-100">
+                                View Similar Complaint
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if file_error %}
+                    <div class="alert-box alert-danger-soft">
+                        <strong>File Error:</strong> {{ file_error }}
+                    </div>
+                    {% endif %}
+
+                    {% if success_message %}
+                    <div class="alert-box alert-success-soft">
+                        <strong>Success:</strong> {{ success_message }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if sentiment %}
+                <div class="analysis-card">
+                    <div class="analysis-header">
+                        <h3 class="analysis-title">📊 Complaint Analysis Result</h3>
+                    </div>
+
+                    <div class="analysis-body">
+                        <div class="row g-4">
+                            <div class="col-md-4 col-lg-3">
+                                <div class="info-tile">
+                                    <div class="tile-label">Tracking ID</div>
+                                    <span class="badge-box badge-dark-soft">{{ ticket_id }}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-lg-3">
+                                <div class="info-tile">
+                                    <div class="tile-label">Sentiment</div>
+                                    <span class="badge-box badge-blue-soft">{{ sentiment }}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-lg-3">
+                                <div class="info-tile">
+                                    <div class="tile-label">Urgency</div>
+                                    <span class="badge-box {% if urgency == 'High' %}badge-red-soft{% else %}badge-yellow-soft{% endif %}">
+                                        {{ urgency }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4 col-lg-3">
+                                <div class="info-tile">
+                                    <div class="tile-label">Priority</div>
+                                    <span class="badge-box
+                                        {% if priority == 'Critical' %}badge-red-soft
+                                        {% elif priority == 'High' %}badge-yellow-soft
+                                        {% elif priority == 'Medium' %}badge-blue-soft
+                                        {% else %}badge-gray-soft{% endif %}">
+                                        {{ priority }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="info-tile">
+                                    <div class="tile-label">Assigned Department</div>
+                                    <span class="badge-box badge-blue-soft">{{ department }}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="info-tile">
+                                    <div class="tile-label">Current Status</div>
+                                    <span class="badge-box badge-gray-soft">Pending</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="footer-note">
+                    Your complaint will be processed and assigned to the concerned department.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

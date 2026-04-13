@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Department Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(to right, #eef2f3, #dfe9f3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .main-title {
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+        }
+
+        .sub-text {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 25px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 1rem;
+        }
+
+        .custom-btn {
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 600;
+            background: linear-gradient(to right, #111827, #1f2937);
+            color: white;
+            border: none;
+        }
+
+        .custom-btn:hover {
+            opacity: 0.9;
+            color: white;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .error-box {
+            background: #ffe5e5;
+            color: #b30000;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 48px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <h2 class="main-title">Department Login</h2>
+    <p class="sub-text">Login to access your department dashboard</p>
+
+    {% if error %}
+    <div class="error-box">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+        </div>
+
+        <div class="mb-3 password-wrapper">
+            <label class="form-label fw-semibold">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+            <span class="toggle-password" onclick="togglePassword()">👁️</span>
+        </div>
+
+        <button type="submit" class="btn w-100 custom-btn">Login</button>
+    </form>
+
+    <div class="info-box">
+        <strong>Authorized Access Only</strong>
+        <p class="mb-0 mt-2 text-muted">
+            Please use valid department credentials to access the dashboard.
+        </p>
+    </div>
+
+    <div class="footer-link">
+        <a href="{{ url_for('entry_portal') }}">Back to Entry Portal</a>
+    </div>
+
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById("password");
+        passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+</script>
+
+</body>
+</html>

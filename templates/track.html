@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Complaint</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg,#eef4ff,#f8fbff);
+    font-family: Arial;
+}
+
+.container-box {
+    max-width: 900px;
+    margin: auto;
+    margin-top: 40px;
+}
+
+.card {
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.btn-main {
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+    color: white;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: bold;
+}
+
+.timeline {
+    margin-top: 20px;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-top: 5px;
+}
+
+.done { background: green; }
+.pending { background: orange; }
+.reject { background: red; }
+
+.box {
+    background: #f8fbff;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin-top: 10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container-box">
+
+<div class="card">
+<h4><b>Track Complaint</b></h4>
+
+<form method="POST">
+<div class="row">
+<div class="col-md-6">
+<input type="text" name="ticket_id" class="form-control" placeholder="Tracking ID">
+</div>
+
+<div class="col-md-6">
+<input type="text" name="phone" class="form-control" placeholder="Phone Number">
+</div>
+
+<div class="col-12 mt-3">
+<button class="btn btn-main w-100">Track</button>
+</div>
+</div>
+</form>
+
+{% if error %}
+<div class="alert alert-danger mt-3">{{ error }}</div>
+{% endif %}
+
+</div>
+
+{% if complaint %}
+<div class="card mt-4">
+
+<h5><b>Complaint Timeline</b></h5>
+
+<div class="timeline">
+
+<div class="timeline-item">
+<div class="dot done"></div>
+<div>
+<b>Submitted</b><br>
+{{ complaint.created_at.strftime("%d %b %Y %I:%M %p") }}
+</div>
+</div>
+
+<div class="timeline-item">
+<div class="dot done"></div>
+<div>
+<b>Assigned to {{ complaint.department }}</b><br>
+{{ complaint.created_at.strftime("%d %b %Y %I:%M %p") }}
+</div>
+</div>
+
+{% if complaint.status == "Pending" %}
+<div class="timeline-item">
+<div class="dot pending"></div>
+<div><b>Pending</b></div>
+</div>
+
+{% elif complaint.status == "In Progress" %}
+<div class="timeline-item">
+<div class="dot done"></div>
+<div>
+<b>In Progress</b><br>
+{{ complaint.updated_at.strftime("%d %b %Y %I:%M %p") }}
+</div>
+</div>
+
+{% elif complaint.status == "Resolved" %}
+<div class="timeline-item">
+<div class="dot done"></div>
+<div>
+<b>Resolved</b><br>
+{{ complaint.updated_at.strftime("%d %b %Y %I:%M %p") }}
+</div>
+</div>
+
+{% elif complaint.status == "Rejected" %}
+<div class="timeline-item">
+<div class="dot reject"></div>
+<div>
+<b>Rejected</b><br>
+{{ complaint.updated_at.strftime("%d %b %Y %I:%M %p") }}
+</div>
+</div>
+{% endif %}
+
+</div>
+
+<div class="box mt-3">
+<b>Description:</b><br>
+{{ complaint.text }}
+</div>
+
+<div class="box">
+<b>Remark:</b><br>
+{{ complaint.remark if complaint.remark else "No remarks yet" }}
+</div>
+
+{% if complaint.filename %}
+<a href="{{ url_for('static', filename='uploads/' + complaint.filename) }}" target="_blank" class="btn btn-outline-dark mt-3">
+View Evidence
+</a>
+{% endif %}
+
+</div>
+{% endif %}
+
+</div>
+
+</body>
+</html>

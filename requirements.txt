@@ -1,0 +1,5 @@
+Flask
+Flask-SQLAlchemy
+textblob
+scikit-learn
+python-dotenv

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --bg-1: #eef4ff;
+            --bg-2: #f8fbff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-soft: rgba(148, 163, 184, 0.18);
+            --card-bg: rgba(255, 255, 255, 0.88);
+            --shadow-soft: 0 20px 50px rgba(15, 23, 42, 0.08);
+            --shadow-card: 0 12px 28px rgba(15, 23, 42, 0.08);
+
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #16a34a;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --dark: #111827;
+
+            --radius-xl: 28px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--text-dark);
+            background:
+                radial-gradient(circle at top left, #dbeafe 0%, transparent 28%),
+                radial-gradient(circle at bottom right, #e0e7ff 0%, transparent 24%),
+                linear-gradient(135deg, var(--bg-1), var(--bg-2));
+            font-family: Arial, sans-serif;
+        }
+
+        .page-wrap {
+            padding: 28px 0 42px;
+        }
+
+        .topbar {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            border-radius: 22px;
+            padding: 20px 22px;
+            margin-bottom: 24px;
+        }
+
+        .brand-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-btn {
+            border-radius: 14px;
+            padding: 10px 16px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-soft);
+            transition: 0.22s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+        }
+
+        .btn-dark-soft {
+            background: linear-gradient(135deg, #1f2937, #111827);
+            color: white;
+            border: none;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-soft);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .section-wrap {
+            padding: 28px 30px;
+        }
+
+        .section-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.92);
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            box-shadow: var(--shadow-card);
+            padding: 22px 20px;
+            height: 100%;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .glass-card {
+            background: rgba(255,255,255,0.92);
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            box-shadow: var(--shadow-card);
+            height: 100%;
+        }
+
+        .chart-card {
+            padding: 22px;
+        }
+
+        .chart-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .chart-wrap {
+            height: 320px;
+            position: relative;
+        }
+
+        .summary-box {
+            padding: 22px;
+        }
+
+        .summary-tile {
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            background: #f8fbff;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .summary-tile:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 6px;
+        }
+
+        .summary-value {
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .filter-card {
+            padding: 24px;
+        }
+
+        .form-label {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 16px;
+            padding: 13px 14px;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            box-shadow: none;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea:focus {
+            border-color: rgba(37, 99, 235, 0.4);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+        }
+
+        .action-btn {
+            border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-weight: 700;
+        }
+
+        .btn-primary-soft {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-outline-soft {
+            background: white;
+            color: #334155;
+            border: 1px solid var(--border-soft);
+        }
+
+        .table-card {
+            padding: 22px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        .table {
+            min-width: 1220px;
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+            color: #0f172a;
+            font-weight: 800;
+            white-space: nowrap;
+            background: transparent;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding-top: 18px;
+            padding-bottom: 18px;
+            border-color: rgba(148, 163, 184, 0.12);
+        }
+
+        .ticket-id {
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        .user-name {
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .small-muted {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .complaint-text {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .remark-box {
+            background: linear-gradient(135deg, #eff6ff, #f8fbff);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            border-left: 5px solid #2563eb;
+            border-radius: 16px;
+            padding: 14px 16px;
+            line-height: 1.6;
+        }
+
+        .badge-box {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 800;
+            font-size: 0.92rem;
+        }
+
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-yellow { background: #fef3c7; color: #92400e; }
+        .badge-red { background: #fee2e2; color: #b91c1c; }
+        .badge-gray { background: #f1f5f9; color: #334155; }
+
+        .mini-file-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 12px;
+            padding: 9px 13px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid var(--border-soft);
+            background: white;
+            color: #1e293b;
+        }
+
+        .mini-file-btn:hover {
+            color: #0f172a;
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+        }
+
+        .update-box {
+            min-width: 260px;
+        }
+
+        .update-box .form-select,
+        .update-box textarea {
+            border-radius: 14px;
+        }
+
+        .update-box textarea {
+            min-height: 72px;
+            resize: vertical;
+        }
+
+        .update-submit {
+            border: none;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1f2937, #111827);
+            color: white;
+        }
+
+        .empty-box {
+            background: #f8fbff;
+            border: 1px solid var(--border-soft);
+            border-radius: 18px;
+            padding: 18px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 991px) {
+            .brand-title {
+                font-size: 1.75rem;
+            }
+
+            .top-actions {
+                justify-content: flex-start;
+                margin-top: 12px;
+            }
+
+            .section-wrap {
+                padding: 22px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrap">
+    <div class="container">
+
+        <div class="topbar">
+            <div class="row align-items-center g-3">
+                <div class="col-lg-7">
+                    <div class="brand-title">📊 Admin Dashboard</div>
+                    <p class="brand-subtitle">
+                        Welcome, {{ session['username'] }} | Department Access: <strong>{{ user_department }}</strong>
+                    </p>
+                </div>
+                <div class="col-lg-5">
+                    <div class="top-actions">
+                        <a href="/export" class="nav-btn btn-green">⬇ Export CSV</a>
+                        <a href="/logout" class="nav-btn btn-dark-soft">↩ Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <div class="section-wrap">
+                <div class="row g-4">
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-card">
+                            <div class="stat-number text-dark">{{ total }}</div>
+                            <div class="stat-label">📂 Total</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color:#f59e0b;">{{ pending }}</div>
+                            <div class="stat-label">⏳ Pending</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color:#2563eb;">{{ in_progress }}</div>
+                            <div class="stat-label">🔄 In Progress</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color:#16a34a;">{{ resolved }}</div>
+                            <div class="stat-label">✅ Resolved</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color:#dc2626;">{{ rejected }}</div>
+                            <div class="stat-label">❌ Rejected</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-lg-2">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color:#0ea5e9;">{{ critical_count + high_count }}</div>
+                            <div class="stat-label">🚨 Severity</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-wrap pt-0">
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="glass-card chart-card">
+                            <div class="chart-title">📌 Complaints by Status</div>
+                            <div class="chart-wrap">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="glass-card chart-card">
+                            <div class="chart-title">🚨 Complaints by Priority</div>
+                            <div class="chart-wrap">
+                                <canvas id="priorityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="glass-card chart-card">
+                            <div class="chart-title">🏢 Complaints by Department</div>
+                            <div class="chart-wrap">
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="glass-card summary-box">
+                            <div class="chart-title">⚡ Quick Summary</div>
+
+                            <div class="summary-tile">
+                                <div class="summary-label">Most visible workload</div>
+                                <div class="summary-value">
+                                    {% set dept_counts = {
+                                        'Public Works': public_works_count,
+                                        'Water Supply': water_supply_count,
+                                        'Electricity': electricity_count,
+                                        'Municipal': municipal_count,
+                                        'General': general_count
+                                    } %}
+                                    {% set ns = namespace(name='Public Works', count=public_works_count) %}
+                                    {% for name, count in dept_counts.items() %}
+                                        {% if count > ns.count %}
+                                            {% set ns.name = name %}
+                                            {% set ns.count = count %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ ns.name }}
+                                </div>
+                                <div class="small-muted">{{ ns.count }} complaints</div>
+                            </div>
+
+                            <div class="summary-tile">
+                                <div class="summary-label">Resolution Rate</div>
+                                <div class="summary-value">
+                                    {% if total > 0 %}
+                                        {{ ((resolved / total) * 100) | round(1) }}%
+                                    {% else %}
+                                        0%
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="summary-tile">
+                                <div class="summary-label">Critical + High Priority</div>
+                                <div class="summary-value">{{ critical_count + high_count }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-wrap pt-0">
+                <div class="glass-card filter-card">
+                    <div class="section-title">🔍 Filter Complaints</div>
+
+                    <form method="GET">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
+                                    <option value="In Progress" {% if status_filter == "In Progress" %}selected{% endif %}>In Progress</option>
+                                    <option value="Resolved" {% if status_filter == "Resolved" %}selected{% endif %}>Resolved</option>
+                                    <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </div>
+
+                            {% if user_department == "All" %}
+                            <div class="col-md-3">
+                                <label class="form-label">Department</label>
+                                <select name="department" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="Public Works Department" {% if department_filter == "Public Works Department" %}selected{% endif %}>Public Works Department</option>
+                                    <option value="Water Supply Department" {% if department_filter == "Water Supply Department" %}selected{% endif %}>Water Supply Department</option>
+                                    <option value="Electricity Board" {% if department_filter == "Electricity Board" %}selected{% endif %}>Electricity Board</option>
+                                    <option value="Municipal Corporation" {% if department_filter == "Municipal Corporation" %}selected{% endif %}>Municipal Corporation</option>
+                                    <option value="General Administration" {% if department_filter == "General Administration" %}selected{% endif %}>General Administration</option>
+                                </select>
+                            </div>
+                            {% endif %}
+
+                            <div class="col-md-3">
+                                <label class="form-label">Priority</label>
+                                <select name="priority" class="form-select">
+                                    <option value="">All</option>
+                                    <option value="Critical" {% if priority_filter == "Critical" %}selected{% endif %}>Critical</option>
+                                    <option value="High" {% if priority_filter == "High" %}selected{% endif %}>High</option>
+                                    <option value="Medium" {% if priority_filter == "Medium" %}selected{% endif %}>Medium</option>
+                                    <option value="Low" {% if priority_filter == "Low" %}selected{% endif %}>Low</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" placeholder="Search by ticket, name, text" value="{{ search }}">
+                            </div>
+
+                            <div class="col-12 d-flex gap-2 flex-wrap">
+                                <button type="submit" class="action-btn btn-primary-soft">Apply Filters</button>
+                                <a href="/admin" class="action-btn btn-outline-soft text-decoration-none">Reset</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="section-wrap pt-0">
+                <div class="glass-card table-card">
+                    <div class="section-title">🛠 Complaint Management</div>
+
+                    {% if complaints %}
+                    <div class="table-wrap">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Ticket ID</th>
+                                    <th>Citizen</th>
+                                    <th>Complaint</th>
+                                    <th>Department</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>SLA</th>
+                                    <th>Evidence</th>
+                                    <th>Update</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in complaints %}
+                                <tr>
+                                    <td class="ticket-id">{{ c.ticket_id }}</td>
+
+                                    <td>
+                                        <div class="user-name">{{ c.name }}</div>
+                                        <div class="small-muted">{{ c.phone }}</div>
+                                        <div class="small-muted">{{ c.email }}</div>
+                                    </td>
+
+                                    <td style="min-width: 280px;">
+                                        <div class="complaint-text">{{ c.text }}</div>
+                                        {% if c.remark %}
+                                        <div class="remark-box">
+                                            <strong>Remark:</strong> {{ c.remark }}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ c.department }}</td>
+
+                                    <td>
+                                        <span class="badge-box
+                                            {% if c.priority == 'Critical' %}badge-red
+                                            {% elif c.priority == 'High' %}badge-yellow
+                                            {% elif c.priority == 'Medium' %}badge-blue
+                                            {% else %}badge-gray{% endif %}">
+                                            {{ c.priority }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge-box
+                                            {% if c.status == 'Resolved' %}badge-green
+                                            {% elif c.status == 'In Progress' %}badge-blue
+                                            {% elif c.status == 'Rejected' %}badge-red
+                                            {% else %}badge-yellow{% endif %}">
+                                            {{ c.status }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {% set sla = calculate_sla_status(c.created_at) %}
+                                        <span class="badge-box
+                                            {% if sla == 'Escalated' %}badge-red
+                                            {% elif sla == 'Warning' %}badge-yellow
+                                            {% else %}badge-green{% endif %}">
+                                            {{ sla }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {% if c.filename %}
+                                            <a href="{{ url_for('static', filename='uploads/' + c.filename) }}" target="_blank" class="mini-file-btn">📎 View</a>
+                                        {% else %}
+                                            <span class="small-muted">No file</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="update-box">
+                                        <form method="POST" action="/update_status/{{ c.id }}">
+                                            <div class="mb-2">
+                                                <select name="status" class="form-select form-select-sm">
+                                                    <option value="Pending" {% if c.status == "Pending" %}selected{% endif %}>Pending</option>
+                                                    <option value="In Progress" {% if c.status == "In Progress" %}selected{% endif %}>In Progress</option>
+                                                    <option value="Resolved" {% if c.status == "Resolved" %}selected{% endif %}>Resolved</option>
+                                                    <option value="Rejected" {% if c.status == "Rejected" %}selected{% endif %}>Rejected</option>
+                                                </select>
+                                            </div>
+                                            <div class="mb-2">
+                                                <textarea name="remark" class="form-control form-control-sm" rows="2" placeholder="Enter action taken / remark">{{ c.remark }}</textarea>
+                                            </div>
+                                            <button type="submit" class="update-submit">Update</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <div class="empty-box">No complaints found for the selected filters.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const statusCtx = document.getElementById('statusChart');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Progress', 'Resolved', 'Rejected'],
+            datasets: [{
+                data: [{{ pending }}, {{ in_progress }}, {{ resolved }}, {{ rejected }}],
+                backgroundColor: ['#facc15', '#3b82f6', '#22c55e', '#ef4444'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    const priorityCtx = document.getElementById('priorityChart');
+    new Chart(priorityCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Critical', 'High', 'Medium', 'Low'],
+            datasets: [{
+                data: [{{ critical_count }}, {{ high_count }}, {{ medium_count }}, {{ low_count }}],
+                backgroundColor: ['#dc2626', '#f97316', '#facc15', '#9ca3af'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    const departmentCtx = document.getElementById('departmentChart');
+    new Chart(departmentCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Public Works', 'Water Supply', 'Electricity', 'Municipal', 'General'],
+            datasets: [{
+                label: 'Complaints',
+                data: [
+                    {{ public_works_count }},
+                    {{ water_supply_count }},
+                    {{ electricity_count }},
+                    {{ municipal_count }},
+                    {{ general_count }}
+                ],
+                backgroundColor: ['#6366f1', '#06b6d4', '#f59e0b', '#10b981', '#8b5cf6'],
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
